@@ -1,0 +1,111 @@
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Scanner;
+
+class Cadastro {
+    private String nome;
+    private int idade;
+    private double valorCompra;
+    private Double cashback; // Usar Double para permitir valor null
+
+    public Cadastro(String nome, int idade, double valorCompra) {
+        this.nome = nome;
+        this.idade = idade;
+        this.valorCompra = valorCompra;
+        this.cashback = calcularCashback();
+    }
+
+    private Double calcularCashback() {
+        if (idade < 21 && valorCompra < 1000) {
+            return valorCompra * 0.07; // 7% de cashback
+        } else if (idade < 21 && valorCompra > 1000) {
+            return valorCompra * 0.10; // 10% de cashback
+        } else if (idade >= 21 && valorCompra < 1000) {
+            return valorCompra * 0.05; // 5% de cashback
+        } else if (idade >= 21 && valorCompra > 1000) {
+            return valorCompra * 0.07; // 7% de cashback
+        } else {
+            return null; // Não atender a nenhum critério de cashback
+        }
+    }
+
+    @Override
+    public String toString() {
+        if (cashback == null) {
+            return ""; // Não exibir nada se o cashback for null
+        }
+        return "Nome: " + nome + ", Idade: " + idade + ", Valor da Compra: R$ " + String.format("%.2f", valorCompra)
+                + ", Cashback: R$ " + String.format("%.2f", cashback);
+    }
+}
+
+public class CadastroClientes {
+    private static List<Cadastro> listaCadastros = new ArrayList<>();
+
+    public static void main(String[] args) {
+        Scanner scanner = new Scanner(System.in);
+        boolean continuar = true;
+
+        while (continuar) {
+            System.out.println("Cadastro de Clientes");
+            System.out.println("1. Cadastrar Cliente");
+            System.out.println("2. Listar Cadastros");
+            System.out.println("3. Sair");
+            System.out.print("Escolha uma opção: ");
+            int opcao = scanner.nextInt();
+            scanner.nextLine();  // Limpar o buffer
+
+            switch (opcao) {
+                case 1:
+                    cadastrarCliente(scanner);
+                    break;
+                case 2:
+                    listarCadastros();
+                    break;
+                case 3:
+                    continuar = false;
+                    break;
+                default:
+                    System.out.println("Opção inválida. Tente novamente.");
+                    break;
+            }
+        }
+
+        scanner.close();
+        System.out.println("Programa encerrado.");
+    }
+
+    private static void cadastrarCliente(Scanner scanner) {
+        System.out.print("Digite o nome: ");
+        String nome = scanner.nextLine();
+
+        System.out.print("Digite a idade: ");
+        int idade = scanner.nextInt();
+
+        System.out.print("Digite o valor da compra: ");
+        double valorCompra = scanner.nextDouble();
+        scanner.nextLine();  // Limpar o buffer
+
+        Cadastro cadastro = new Cadastro(nome, idade, valorCompra);
+        if (cadastro.toString().isEmpty()) {
+            System.out.println("Compra não atende aos critérios de cashback. Nenhum cadastro exibido.");
+        } else {
+            listaCadastros.add(cadastro);
+            System.out.println("Cliente cadastrado com sucesso!");
+        }
+    }
+
+    private static void listarCadastros() {
+        if (listaCadastros.isEmpty()) {
+            System.out.println("Nenhum cadastro encontrado.");
+        } else {
+            System.out.println("Lista de Cadastros:");
+            for (Cadastro cadastro : listaCadastros) {
+                String str = cadastro.toString();
+                if (!str.isEmpty()) {
+                    System.out.println(str);
+                }
+            }
+        }
+    }
+}
